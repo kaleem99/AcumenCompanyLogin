@@ -4,6 +4,9 @@ import Sidebar from "./components/Sidebar";
 import Main from "./components/Main";
 import "./App.css";
 // import { Amplify } from "aws-amplify";
+import { IoMdCloseCircle } from "react-icons/io";
+import { HiMenu } from "react-icons/hi";
+
 import { userPool, client, command } from "./aws-exports";
 import {
   CognitoIdentityProviderClient,
@@ -36,11 +39,10 @@ const ToggleButton = styled.button`
   background: white;
   color: black;
   border: none;
-  padding: 10px;
   cursor: pointer;
-  width: 30px;
-  height: 30px;
-  font-size: large;
+  width: 40px;
+  height: 40px;
+  font-size: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -95,10 +97,9 @@ const App = ({ session }) => {
   const dispatch = useDispatch();
   useEffect(() => {
     const checkAuth = async () => {
-      
       const user = userPool.getCurrentUser();
       if (user) {
-        user.getSession(async(err, session) => {
+        user.getSession(async (err, session) => {
           if (err || !session.isValid()) {
             setIsAuthenticated(false);
             // history.push("/login"); // Redirect to login if not authenticated
@@ -110,9 +111,9 @@ const App = ({ session }) => {
                 UserPoolId: process.env.REACT_APP_API_POOLID,
                 GroupName: session["accessToken"].payload["cognito:groups"][0],
               };
-      
+
               const command = new ListUsersInGroupCommand(input);
-      
+
               const response = await client.send(command);
               console.log(response);
               dispatch({ type: "GET_USERS", payload: response });
@@ -153,7 +154,7 @@ const App = ({ session }) => {
         return (
           <Container>
             <ToggleButton onClick={() => setSidebarOpen(!sidebarOpen)}>
-              {sidebarOpen ? "X" : "|||"}
+              {sidebarOpen ? <IoMdCloseCircle /> : <HiMenu />}
             </ToggleButton>
             {sidebarOpen && <Sidebar isOpen={sidebarOpen} />}
             <Main />

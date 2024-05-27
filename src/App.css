@@ -64,14 +64,18 @@ table {
 
 td,
 th {
-  border: 1px solid #dddddd;
+  border: 1px solid #b0b0b0;
   text-align: left;
   padding: 8px;
 }
 
-tr:nth-child(even) {
-  background-color: #dddddd;
+th {
+  background-color: #b0b0b0;
+  color: white;
 }
+/* tr{
+  background-color: white;
+} */
 .InnerHomeDiv {
   width: 100%;
   /* height: 90%; */
@@ -121,6 +125,7 @@ tr:nth-child(even) {
 
 .button:hover {
   background-color: #0056b3;
+  color: white;
 }
 
 .error {

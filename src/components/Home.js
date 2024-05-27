@@ -8,6 +8,7 @@ import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 import {
   CognitoIdentityProviderClient,
   AdminAddUserToGroupCommand,
+  AdminDeleteUserCommand,
 } from "@aws-sdk/client-cognito-identity-provider";
 
 const Home = ({ users, session }) => {
@@ -44,6 +45,21 @@ const Home = ({ users, session }) => {
   //     console.log("No current user");
   //   }
   // };
+  async function deleteUser(username) {
+    const params = {
+      UserPoolId: process.env.REACT_APP_API_POOLID,
+      Username: username,
+    };
+
+    try {
+      const command = new AdminDeleteUserCommand(params);
+      const response = await client.send(command);
+      console.log("User deleted successfully:", response);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
+  }
   const handleSignUp = async (setError) => {
     const tenantId = session["accessToken"].payload["cognito:groups"][0];
     const region = process.env.REACT_APP_API_REGION;
@@ -118,7 +134,7 @@ const Home = ({ users, session }) => {
     // const sendEmailCommand = new SendEmailCommand(emailParams);
     // await sesClient.send(sendEmailCommand);
   };
-  console.log(users);
+  // console.log(session.accessToken.payload.username);
   return !state ? (
     <div className="Sections">
       <h2>Users</h2>
@@ -129,20 +145,33 @@ const Home = ({ users, session }) => {
               <th>Name</th>
               {/* <th>Surname</th> */}
               <th>Value</th>
+              <th>Delete</th>
             </tr>
           </thead>
           <tbody>
-            {users.map((data) => (
-              <tr key={data.Name}>
-                <td>{data.Username}</td>
-                <td>{data.Attributes[0].Value}</td>
-              </tr>
-            ))}
+            {users
+              .filter(
+                (data) => data.Username !== session.accessToken.payload.username
+              )
+              .map((data) => (
+                <tr key={data.Name}>
+                  <td>{data.Username}</td>
+                  <td>{data.Attributes[0].Value}</td>
+                  <td>
+                    <button
+                      className="button"
+                      onClick={() => deleteUser(data.Username)}
+                    >
+                      Delete User
+                    </button>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>
       <br />
-      <button onClick={() => setState(!state)} className="AddUsers">
+      <button onClick={() => setState(!state)} className="AddUsers button">
         Add More Users
       </button>
     </div>

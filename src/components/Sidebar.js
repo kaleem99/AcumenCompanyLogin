@@ -1,11 +1,12 @@
 import React from "react";
 import { connect, useDispatch } from "react-redux";
 import styled from "styled-components";
+
 import { userPool } from "../aws-exports";
 const NavSections = ["Home", "Account"];
 const SidebarContainer = styled.div`
   width: 250px;
-  background: #45AA6D;
+  background: #B0B0B0;
   color: #fff;
   height: 100%;
   transition: transform 0.3s ease;
@@ -28,6 +29,7 @@ const Button = styled.div`
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  padding: 0px;
 `;
 const Sidebar = ({ isOpen, section }) => {
   const dispatch = useDispatch();
@@ -46,6 +48,7 @@ const Sidebar = ({ isOpen, section }) => {
           <br></br>
           {NavSections.map((data) => (
             <Button
+              className="button"
               onClick={() => dispatch({ type: data })}
               style={
                 section === data
@@ -59,6 +62,7 @@ const Sidebar = ({ isOpen, section }) => {
         </div>
         <div style={{ height: "10%" }}>
           <Button
+            className="button"
             onClick={() => {
               userPool.getCurrentUser().signOut();
               window.location.reload();
