@@ -79,39 +79,40 @@ const Button = styled.button`
   }
 `;
 
-const Form = ({ setState, newUsers, setNewUsers }) => {
-  const [data, setData] = useState({});
-  const AddNewUser = () => {
-    if (data.name && data.surname && data.email) {
-      setNewUsers([...newUsers, data]);
-      setState(false);
-    }
-  };
+const Form = ({ setState, newUsers, setNewUsers, handleSignUp }) => {
+  const [err, setError] = useState("");
+  // const AddNewUser = () => {
+  //   if (data.name && data.surname && data.email) {
+  //     setNewUsers([...newUsers, data]);
+  //     setState(false);
+  //   }
+  // };
   const handleData = (e) => {
     const { name, value } = e.target;
-    setData({ ...data, [name]: value });
+    setNewUsers({ ...newUsers, [name]: value });
   };
   return (
     <FormContainer>
       <form>
+        <p>{err}</p>
         <FormTitle>Add New User</FormTitle>
         <FormGroup>
-          <Label htmlFor="name">Name</Label>
+          <Label htmlFor="username">Username</Label>
           <Input
             onChange={(e) => handleData(e)}
             type="text"
-            id="name"
-            name="name"
+            id="username"
+            name="username"
             required
           />
         </FormGroup>
         <FormGroup>
-          <Label htmlFor="surname">Surname</Label>
+          <Label htmlFor="password">Enter a temporary password</Label>
           <Input
             onChange={(e) => handleData(e)}
-            type="surname"
-            id="surname"
-            name="surname"
+            type="password"
+            id="password"
+            name="password"
             required
           />
         </FormGroup>
@@ -125,7 +126,7 @@ const Form = ({ setState, newUsers, setNewUsers }) => {
             required
           />
         </FormGroup>
-        <Button onClick={() => AddNewUser()} type="button">
+        <Button onClick={() => handleSignUp(setError)} type="button">
           Submit
         </Button>
         <br></br>

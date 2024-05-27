@@ -48,6 +48,7 @@
   color: white;
   font-weight: bold;
   font-size: large;
+  cursor: pointer;
 }
 .Sections {
   width: 100%;

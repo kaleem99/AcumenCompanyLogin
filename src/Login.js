@@ -1,6 +1,6 @@
 // src/components/Login.js
 import React, { useState } from "react";
-import userPool from "./aws-exports";
+import { userPool } from "./aws-exports";
 import {
   AuthenticationDetails,
   CognitoUser,
@@ -52,6 +52,7 @@ const Login = () => {
       } else {
         setError("");
         console.log("Logged in user:", result);
+        window.location.reload();
         // Perform further actions after successful login, e.g., redirect
       }
     } catch (err) {

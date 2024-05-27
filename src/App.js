@@ -4,14 +4,21 @@ import Sidebar from "./components/Sidebar";
 import Main from "./components/Main";
 import "./App.css";
 // import { Amplify } from "aws-amplify";
-import userPool from "./aws-exports";
+import { userPool, client, command } from "./aws-exports";
+import {
+  CognitoIdentityProviderClient,
+  AdminListGroupsForUserCommand,
+  ListUsersInGroupCommand,
+  ListUsersCommand,
+  ListUserPoolClientsCommand,
+} from "@aws-sdk/client-cognito-identity-provider";
 import {
   AuthenticationDetails,
   CognitoUser,
   CognitoUserAttribute,
 } from "amazon-cognito-identity-js";
 import Login from "./Login";
-import { useDispatch } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 const Container = styled.div`
   display: flex;
   height: 100vh;
@@ -78,7 +85,7 @@ const signup = (email, password) => {
     }
   });
 };
-const App = () => {
+const App = ({ session }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -87,16 +94,31 @@ const App = () => {
   const password = "@$TqC32#Nk#fiLWv";
   const dispatch = useDispatch();
   useEffect(() => {
-    const checkAuth = () => {
+    const checkAuth = async () => {
+      
       const user = userPool.getCurrentUser();
       if (user) {
-        user.getSession((err, session) => {
+        user.getSession(async(err, session) => {
           if (err || !session.isValid()) {
             setIsAuthenticated(false);
             // history.push("/login"); // Redirect to login if not authenticated
           } else {
             setIsAuthenticated(true);
             console.log(session);
+            try {
+              const input = {
+                UserPoolId: process.env.REACT_APP_API_POOLID,
+                GroupName: session["accessToken"].payload["cognito:groups"][0],
+              };
+      
+              const command = new ListUsersInGroupCommand(input);
+      
+              const response = await client.send(command);
+              console.log(response);
+              dispatch({ type: "GET_USERS", payload: response });
+            } catch (error) {
+              console.error("Error listing users:", error);
+            }
             dispatch({ type: "SESSION_DATA", payload: session });
           }
           setLoading(false);
@@ -106,7 +128,7 @@ const App = () => {
             console.log(err);
           } else {
             // console.log(attributes);
-            dispatch({ type: "GET_USERS", payload: attributes });
+            // dispatch({ type: "GET_USERS", payload: attributes });
           }
         });
         user.getUserData((err, data) => {
@@ -145,5 +167,12 @@ const App = () => {
   };
   return <div>{checkIfLoggedIn()}</div>;
 };
+const mapStateToProps = (state) => {
+  // console.log(state.users, 1);
+  return {
+    users: state.users.Users,
+    session: state.session,
+  };
+};
 
-export default App;
+export default connect(mapStateToProps, {})(App);

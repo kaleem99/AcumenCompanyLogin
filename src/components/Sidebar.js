@@ -1,6 +1,7 @@
 import React from "react";
 import { connect, useDispatch } from "react-redux";
 import styled from "styled-components";
+import { userPool } from "../aws-exports";
 const NavSections = ["Home", "Account"];
 const SidebarContainer = styled.div`
   width: 250px;
@@ -57,7 +58,14 @@ const Sidebar = ({ isOpen, section }) => {
           ))}
         </div>
         <div style={{ height: "10%" }}>
-          <Button>Signout</Button>
+          <Button
+            onClick={() => {
+              userPool.getCurrentUser().signOut();
+              window.location.reload();
+            }}
+          >
+            Signout
+          </Button>
         </div>
       </div>
     </SidebarContainer>
