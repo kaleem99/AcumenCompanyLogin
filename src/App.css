@@ -49,6 +49,8 @@
   font-weight: bold;
   font-size: large;
   cursor: pointer;
+  /* position: absolute;
+  bottom: 10px; */
 }
 .Sections {
   width: 100%;
@@ -68,9 +70,15 @@ th {
   text-align: left;
   padding: 8px;
 }
-
+.sectionName {
+  font-size: 30px;
+  font-weight: bold;
+  width: 100%;
+  text-align: center;
+  height: 50px;
+}
 th {
-  background-color: #b0b0b0;
+  background-color: #191970;
   color: white;
 }
 /* tr{

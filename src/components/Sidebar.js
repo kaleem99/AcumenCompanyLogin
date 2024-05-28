@@ -31,7 +31,7 @@ const Button = styled.div`
   cursor: pointer;
   padding: 0px;
 `;
-const Sidebar = ({ isOpen, section }) => {
+const Sidebar = ({ isOpen, section, email }) => {
   const dispatch = useDispatch();
   return (
     <SidebarContainer isOpen={isOpen}>
@@ -44,7 +44,7 @@ const Sidebar = ({ isOpen, section }) => {
         }}
       >
         <div style={{ textAlign: "center", height: "90%" }}>
-          <h2>Company Name</h2>
+          <p style={{ fontWeight: "bold" }}>{email}</p>
           <br></br>
           {NavSections.map((data) => (
             <Button
@@ -60,9 +60,20 @@ const Sidebar = ({ isOpen, section }) => {
             </Button>
           ))}
         </div>
-        <div style={{ height: "10%" }}>
+        <div
+          style={{
+            height: "10%",
+            display: "flex",
+            position: "absolute",
+            bottom: "10px",
+            width: "100%",
+            justifyContent: "center",
+            alignItems: "end",
+          }}
+        >
           <Button
             className="button"
+            style={{ margin: "0px" }}
             onClick={() => {
               userPool.getCurrentUser().signOut();
               window.location.reload();
@@ -78,6 +89,7 @@ const Sidebar = ({ isOpen, section }) => {
 const mapStateToProps = (state) => {
   return {
     section: state.section,
+    email: state?.session?.idToken?.payload?.email || "",
   };
 };
 export default connect(mapStateToProps, {})(Sidebar);

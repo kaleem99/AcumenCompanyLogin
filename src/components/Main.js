@@ -24,7 +24,7 @@ const Main = ({ section }) => {
   };
   return (
     <MainContainer>
-      <h1>{section}</h1>
+      <div className="sectionName">{section}</div>
       {checkSection()}
     </MainContainer>
   );
