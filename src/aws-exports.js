@@ -1,4 +1,5 @@
 // Existing code
+import { SESClient } from "@aws-sdk/client-ses";
 import { CognitoUserPool } from "amazon-cognito-identity-js";
 import {
   CognitoIdentityProviderClient,
@@ -19,6 +20,7 @@ const config = {
     identityPoolId: "eu-west-1:a6763df5-84e9-412f-b304-90b16b114e22",
   }),
 };
+const sesClient = new SESClient(config);
 
 const client = new CognitoIdentityProviderClient(config);
 
@@ -37,4 +39,4 @@ const poolData = {
 };
 
 const userPool = new CognitoUserPool(poolData);
-export { userPool, client, config };
+export { userPool, client, config, sesClient };

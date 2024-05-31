@@ -106,7 +106,7 @@ const Form = ({ setState, newUsers, setNewUsers, handleSignUp }) => {
             required
           />
         </FormGroup>
-        <FormGroup>
+        {/* <FormGroup>
           <Label htmlFor="password">Enter a temporary password</Label>
           <Input
             onChange={(e) => handleData(e)}
@@ -115,7 +115,7 @@ const Form = ({ setState, newUsers, setNewUsers, handleSignUp }) => {
             name="password"
             required
           />
-        </FormGroup>
+        </FormGroup> */}
         <FormGroup>
           <Label htmlFor="email">Email</Label>
           <Input

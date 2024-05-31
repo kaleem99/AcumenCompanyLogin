@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Form from "./Form";
 import { connect } from "react-redux";
-import { userPool, client } from "../aws-exports";
+import { userPool, client, config, sesClient } from "../aws-exports";
 import { CognitoUserAttribute } from "amazon-cognito-identity-js";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 
@@ -9,6 +9,7 @@ import {
   CognitoIdentityProviderClient,
   AdminAddUserToGroupCommand,
   AdminDeleteUserCommand,
+  AdminCreateUserCommand,
 } from "@aws-sdk/client-cognito-identity-provider";
 
 const Home = ({ users, session }) => {
@@ -62,18 +63,14 @@ const Home = ({ users, session }) => {
   }
   const handleSignUp = async (setError) => {
     const tenantId = session["accessToken"].payload["cognito:groups"][0];
-    const region = process.env.REACT_APP_API_REGION;
-    const sesClient = new SESClient({ region });
-
     const attributeList = [];
-    if (!newUsers.email && !newUsers.username && !newUsers.password) {
+    if (!newUsers.email && !newUsers.username) {
       return false;
     }
     const emailAttribute = new CognitoUserAttribute({
       Name: "email",
       Value: newUsers.email,
     });
-
     const tenantIdAttribute = new CognitoUserAttribute({
       Name: "custom:tenantId",
       Value: tenantId,
@@ -86,53 +83,35 @@ const Home = ({ users, session }) => {
     attributeList.push(emailAttribute);
     attributeList.push(tenantIdAttribute);
     attributeList.push(userRoleAttribute);
-    // console.log(newUsers, 67);
-    userPool.signUp(
-      newUsers.username,
-      newUsers.password,
-      attributeList,
-      null,
-      async (err, result) => {
-        if (err) {
-          console.error("Error signing up:", err.message);
-          setError(err.message);
-          return;
-        }
-        console.log("User signed up:", result);
-        try {
-          const username = result.user.getUsername(); // get the username
-          const addUserToGroupCommand = new AdminAddUserToGroupCommand({
-            UserPoolId: process.env.REACT_APP_API_POOLID,
-            Username: username,
-            GroupName: session["accessToken"].payload["cognito:groups"][0], // replace with your group name
-          });
 
-          const addUserToGroupResponse = await client.send(
-            addUserToGroupCommand
-          );
-          console.log("User added to group:", addUserToGroupResponse);
-          // setState(!state);
-          window.location.reload();
-        } catch (addGroupError) {
-          console.error("Error adding user to group:", addGroupError);
-        }
-      }
-    );
-    // const emailParams = {
-    //   Destination: { ToAddresses: [newUsers.email] },
-    //   Message: {
-    //     Body: {
-    //       Text: {
-    //         Charset: "UTF-8",
-    //         Data: `Welcome to our service. Your username is: ${newUsers.email} and your password is: ${newUsers.password}`,
-    //       },
-    //     },
-    //     Subject: { Charset: "UTF-8", Data: "Your new account details" },
-    //   },
-    //   Source: "Acumen Team",
-    // };
-    // const sendEmailCommand = new SendEmailCommand(emailParams);
-    // await sesClient.send(sendEmailCommand);
+    try {
+      // Create user in the user pool with AdminCreateUserCommand
+      const input = {
+        UserPoolId: process.env.REACT_APP_API_POOLID,
+        Username: newUsers.username,
+        UserAttributes: attributeList,
+        DesiredDeliveryMediums: ["EMAIL"],
+        ForceAliasCreation: false,
+      };
+      const createUserCommand = new AdminCreateUserCommand(input);
+      const createUserResponse = await client.send(createUserCommand);
+      console.log("User created in user pool:", createUserResponse);
+
+      // Add the user to a group
+      const addUserToGroupCommand = new AdminAddUserToGroupCommand({
+        UserPoolId: process.env.REACT_APP_API_POOLID,
+        Username: newUsers.username,
+        GroupName: session["accessToken"].payload["cognito:groups"][0], // replace with your group name
+      });
+
+      const addUserToGroupResponse = await client.send(addUserToGroupCommand);
+      console.log("User added to group:", addUserToGroupResponse);
+
+      window.location.reload();
+    } catch (error) {
+      console.error("Error creating user or adding to group:", error);
+      setError(error.message);
+    }
   };
   // console.log(session.accessToken.payload.username);
   return !state ? (
