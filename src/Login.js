@@ -1,11 +1,15 @@
 // src/components/Login.js
 import React, { useState } from "react";
-import { userPool } from "./aws-exports";
+import { userPool, client } from "./aws-exports";
 import {
   AuthenticationDetails,
   CognitoUser,
   CognitoUserAttribute,
 } from "amazon-cognito-identity-js";
+import {
+  CognitoIdentityProviderClient,
+  AdminUpdateUserAttributesCommand,
+} from "@aws-sdk/client-cognito-identity-provider";
 const authenticate = (Email, Password, newPassword) => {
   return new Promise((resolve, reject) => {
     const user = new CognitoUser({
@@ -16,14 +20,35 @@ const authenticate = (Email, Password, newPassword) => {
       Username: Email,
       Password,
     });
+
     user.authenticateUser(authDetails, {
-      onSuccess: (result) => {
+      onSuccess: async (result) => {
         console.log("Login successful");
         console.log(result);
-        resolve(result);
+
+        // Update email as verified
+        try {
+          const command = new AdminUpdateUserAttributesCommand({
+            UserPoolId: process.env.REACT_APP_API_POOLID,
+            Username: Email,
+            UserAttributes: [
+              {
+                Name: "email_verified",
+                Value: "true",
+              },
+            ],
+          });
+
+          await client.send(command);
+          console.log("Email verified");
+          resolve(result);
+        } catch (error) {
+          console.error("Error verifying email: ", error);
+          reject(error);
+        }
       },
       onFailure: (err) => {
-        console.log("login failed", err);
+        console.log("Login failed", err);
         reject(err);
       },
       newPasswordRequired: (userAttributes, requiredAttributes) => {
@@ -35,7 +60,7 @@ const authenticate = (Email, Password, newPassword) => {
     });
   });
 };
-const Login = () => {
+const Login = ({ setIsAuthenticated }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -104,6 +129,9 @@ const Login = () => {
         <button onClick={handleLogin} className={"button"}>
           Login
         </button>
+        <a onClick={() => setIsAuthenticated("ForgotPassword")} href="#">
+          Forgot Password
+        </a>
         {showNewPassword && (
           <>
             <input

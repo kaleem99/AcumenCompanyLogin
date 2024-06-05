@@ -3,7 +3,10 @@ import { connect, useDispatch } from "react-redux";
 import styled from "styled-components";
 
 import { userPool } from "../aws-exports";
-const NavSections = ["Home", "Account"];
+const NavSections = [
+  { name: "Home", user: true },
+  { name: "Account", user: false },
+];
 const SidebarContainer = styled.div`
   width: 250px;
   background: #B0B0B0;
@@ -31,7 +34,7 @@ const Button = styled.div`
   cursor: pointer;
   padding: 0px;
 `;
-const Sidebar = ({ isOpen, section, email }) => {
+const Sidebar = ({ isOpen, section, email, userRole }) => {
   const dispatch = useDispatch();
   return (
     <SidebarContainer isOpen={isOpen}>
@@ -46,19 +49,26 @@ const Sidebar = ({ isOpen, section, email }) => {
         <div style={{ textAlign: "center", height: "90%" }}>
           <p style={{ fontWeight: "bold" }}>{email}</p>
           <br></br>
-          {NavSections.map((data) => (
-            <Button
-              className="button"
-              onClick={() => dispatch({ type: data })}
-              style={
-                section === data
-                  ? { background: "#007bff", color: "white" }
-                  : {}
-              }
-            >
-              {data}
-            </Button>
-          ))}
+          {NavSections.map((data) => {
+            if (userRole && userRole === "TenantAdmin") {
+              data.user = true;
+            }
+            return (
+              data.user && (
+                <Button
+                  className="button"
+                  onClick={() => dispatch({ type: data.name })}
+                  style={
+                    section === data.name
+                      ? { background: "#007bff", color: "white" }
+                      : {}
+                  }
+                >
+                  {data.name}
+                </Button>
+              )
+            );
+          })}
         </div>
         <div
           style={{
@@ -90,6 +100,7 @@ const mapStateToProps = (state) => {
   return {
     section: state.section,
     email: state?.session?.idToken?.payload?.email || "",
+    userRole: state?.session?.idToken?.payload["custom:userRole"] || null,
   };
 };
 export default connect(mapStateToProps, {})(Sidebar);

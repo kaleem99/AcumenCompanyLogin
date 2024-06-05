@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import styled from "styled-components";
 import Home from "./Home";
 import Account from "./Account";
+import UserHome from "./UserHome";
 
 const MainContainer = styled.div`
   flex-grow: 1;
@@ -10,11 +11,14 @@ const MainContainer = styled.div`
   padding: 20px;
 `;
 
-const Main = ({ section }) => {
-  console.log(section);
+const Main = ({ section, session }) => {
+  const userRole = session?.idToken?.payload["custom:userRole"] || null;
   const checkSection = () => {
     switch (section) {
       case "Home":
+        if (userRole && userRole === "TenantUser") {
+          return <UserHome />;
+        }
         return <Home />;
       case "Account":
         return <Account />;
@@ -32,6 +36,7 @@ const Main = ({ section }) => {
 const mapStateToProps = (state) => {
   return {
     section: state.section,
+    session: state.session,
   };
 };
 export default connect(mapStateToProps, {})(Main);
