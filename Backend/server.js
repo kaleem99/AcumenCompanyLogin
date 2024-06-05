@@ -7,23 +7,30 @@ const app = express();
 const port = 8080;
 
 // Configuration for allowed origins
-const allowedOrigins = [
-  'http://localhost:3000',
-  'http://localhost.com:3000'
-];
+// const allowedOrigins = [
+//   'http://localhost:3000',
+//   'http://localhost.com:3000'
+// ];
 
-// Middleware to handle CORS
-app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin like mobile apps or curl requests
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(msg), false);
-    }
-    return callback(null, true);
-  }
-}));
+// // Middleware to handle CORS
+// app.use(cors({
+//   origin: function (origin, callback) {
+//     // Allow requests with no origin like mobile apps or curl requests
+//     if (!origin) return callback(null, true);
+//     if (allowedOrigins.indexOf(origin) === -1) {
+//       const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+//       return callback(new Error(msg), false);
+//     }
+//     return callback(null, true);
+//   }
+// }));
+const corsOptions = {
+  origin: '*', // Allow all origins
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Allow specific HTTP methods
+  allowedHeaders: 'Content-Type,Authorization', // Allow specific headers
+};
+
+app.use(cors(corsOptions));
 
 app.use(bodyParser.json());
 
