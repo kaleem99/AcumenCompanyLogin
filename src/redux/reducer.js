@@ -1,4 +1,11 @@
-const defaultState = { section: "Home", users: [], session: [] };
+import { act } from "react";
+
+const defaultState = {
+  section: "Home",
+  users: [],
+  session: [],
+  creditsData: {},
+};
 const reducer = (state = defaultState, action) => {
   switch (action.type) {
     case "Home":
@@ -9,6 +16,8 @@ const reducer = (state = defaultState, action) => {
       return { ...state, users: action.payload };
     case "SESSION_DATA":
       return { ...state, session: action.payload };
+    case "CREDITS_DATA":
+      return { ...state, creditsData: action.payload };
     default:
       return { ...state };
   }

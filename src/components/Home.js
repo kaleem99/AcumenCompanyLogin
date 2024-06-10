@@ -165,7 +165,7 @@ const Home = ({ users, session }) => {
 };
 
 const mapStateToProps = (state) => {
-  // console.log(state.users, 1);
+  console.log(state, 1);
   return {
     users: state.users.Users || [],
     session: state.session,

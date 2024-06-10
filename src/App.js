@@ -97,55 +97,58 @@ const App = ({ session }) => {
   const password = "@$TqC32#Nk#fiLWv";
   const dispatch = useDispatch();
   useEffect(() => {
+    const fetchData = async (token) => {
+      fetch(
+        "https://3q4kwhfhx4.execute-api.eu-west-1.amazonaws.com/prod/tenants",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then((data) => dispatch({ type: "CREDITS_DATA", payload: data }))
+        .catch((error) => console.error("Error:", error));
+    };
     // fetch(
-    //   "https://ce97918edeb1450cb2ca96f38624a54b.vfs.cloud9.eu-west-1.amazonaws.com/get",
+    //   "https://3q4kwhfhx4.execute-api.eu-west-1.amazonaws.com/prod/tenants",
     //   {
-    //     method: "GET",
+    //     method: "GET", // or 'POST', 'PUT', etc.
+    //     mode: "no-cors",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //       // Add any other headers if needed
+    //     },
     //   }
     // )
-    //   .then((res) => {
-    //     if (!res.ok) {
-    //       throw new Error("Network response was not ok");
-    //     }
-    //     return res.json();
-    //   })
-    //   .then((data) => console.log(data))
-    //   .catch((error) => console.error("Fetch error:", error));
-
-    // fetch("http://localhost:8080/api/auth-token", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({
-    //     clientId: "your_client_id",
-    //     clientSecret: "your_client_secret",
-    //     merchantId: "your_merchant_id",
-    //   }),
-    // })
     //   .then((response) => response.json())
     //   .then((data) => console.log(data))
     //   .catch((error) => console.error("Error:", error));
-    // fetch("http://localhost:8080/api/create-checkout-id", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({
-    //     accessToken:
-    //       "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjIwMjEtMDktMDYifQ.eyJlbnRpdHlJRCI6ImFmZGI4YzQ2OThkNjRkMzE5Yzg3YTg0YjNiZWIwZDhkIiwicGFydG5lciI6ZmFsc2UsInNpZCI6ImYxNDM2Mjk1ODJkYjk1OGE2YmEwIiwibWVyY2hhbnRJZCI6ImFmZGI4YzQ2OThkNjRkMzE5Yzg3YTg0YjNiZWIwZDhkIiwiaWF0IjoxNzE3NDM5MDgzLCJuYmYiOjE3MTc0MzkwODMsImV4cCI6MTcxNzQ1MzQ4MywiYXVkIjoiaHR0cHM6Ly9tMm0ucGVhY2hwYXltZW50cy5jb20iLCJpc3MiOiJodHRwczovL3NhbmRib3gtc2VydmljZXMucHBheS5pby8iLCJzdWIiOiI5YTI3NzExODVjNmNjODY3MWVjY2FjNjE4ZTAyNzUifQ.di_jTKd0a_MSbPRUxongqYRiXyMa5TXOFcOtKr9WLP2EI3_TUL7Sadku1cW_nGug08VClT2PJ2oT0vpJR5_nDV0UBe7faSlbdJ4OCzpIk6Fmj8kxZnxmhUS9y6lRL2hd7DJ8h66ls_zkC5wAUdeB8eWYXWOynGn3cYdI3KBMJ6C6Z-PBnXrF8fxu5cYCtLX_A9ePDBSUuAWRLnRHc4UQFZyTmZnmJqYxBJ4-It_KdSJ0Y9h68aSacxdprnre8pDICiU7Se_7uebsnuX1dNB7xaizMeqWtr6SeHjhdHp7fXqdBpv1v3bJylqr_OU-UcgjnMIjNhRP5q2_wLJ2mQidQ24c81lrIaEXvGSU8axADlzGkfD91Xldb-PVGotoPqlogaRmYzvOYdkocm9PQHmjVWXh8qze_nYyTj_iKWGHncjql_aFWzyefZIOvHdVFDkLTcOcOYKFuVVnB7W-hzsCVs4CM4qR1oxc0Cz3xr5IGhCuv0b1K5Ll0lDTl7MgEf0oM9YOb_hDliWRATLopYY-VWCetdlWAWJRg7W8ma661fHxIaP4ghzXlfeBUSCvYsnx6ScS6PYIQleZT4L4NoVVlUYOTSezAtPMIUKHMcfaQFlYBYlnOoT6fISMw5vUzdDXvtlEzvuON2GpZfUkIH_8ryZdMIdaXcn-m_IkOnSW9OU",
-    //     amount: 100.00,
-    //     merchantTransactionId: "OrderNo45dd",
-    //     currency: "ZAR",
-    //     forceDefaultMethod: true,
-    //     entityId: "8ac7a4c88fc8ac63018fc92d2ce50163",
-    //     nonce: "UNQ00012345678",
-    //     shopperResultUrl: "https://kaleem99.github.io/BlazingGrill-UI/",
-    //     defaultPaymentMethod: "CARD",
-    //   }),
-    // })
-    //   .then((response) => response.json())
-    //   .then((data) => console.log(data))
+
+    // fetch(
+    //   "https://3q4kwhfhx4.execute-api.eu-west-1.amazonaws.com/prod/tenant/cb3ba89d22a411ef953f8d271d3448c1",
+    //   {
+    //     method: "GET",
+    //     // mode: "no-cors",
+    //     headers: {
+    //       Authorization:
+    //         "Bearer eyJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAifQ.K60WjkfU9WGUxbre-pdowgsobjfwojm7YlGbjcS-CWw5flbhuHxJVh4IcaYeCyyMSwZE2YjPs9CDxHUbWwdx7tvy6utJC63aGh678Vl8dBum-74QfQqsZ4k0o-v1nvhejA4cEPrdqDnNoi8eKNJ-YFsXt8Uyd7qch5QgG7T8W2fc0U8N-WPi4VmCybK3nWEdSBqHWdP2SinHUYZ4-CtVs64_xTJ3q271fwOyWT_7RnQrUfIe9Ht-iUvgXN-MMPbAYZgGmJyRnlugGQ9KnIE7fINZjZP1CsFLd7zsb0y4T9JGgaDeRW-6SmMuDnteN8tvyn25kjmfFGAgRJfu56Ucqw.zaODyGexC9RdGqgv.3PF3crpLbwtUukykgOZLURC2A79Qzp_GR_UlFSqN2Y4n6yMQyC36g2k50XlhQrY1e9ZOby_SSSXAxeTQ3ZDediVQMCL6mMdlS8_BedFKa_eZcrhk_pxZtIBzSi8oamCaEcxBlfdADKRCmS85Rd81QFpI8_DaADu-FIRgfjAE7NKdZpmNeN-Az7_PoSoCWkKmmWQOfPCHPWOStr2z_O5O6oHcEPvfEbTGC2W6WV3jwkoxmgci9EvbFN7sAZ8e7zCUe4Z_yFJjrrmFUw1LppA5idqyWtVm4nw_vLXXu8ZFoC3pX9PArAbZEa__QpyAxjFUO0IkoC6rBYLtdtfSUa5P5yfi1jGPwaUUNRsk_nqiUoVlO8P1sa4WGHcCP62hmBPFfLLt7Mu_6S8kuZUf_HXo74dbRGGN27sDBnwIIBF11YUj20or6MTO6_jiKZ8pWvn6JfsG6xRKfZ4oCC4fwvnR4Nfprb_R5k9hGwf5wHGGVXF_QgT7__7OqogPOav2l9-3yI72nX_L5J66EdQJAX1X0DvMo-LDH8PANOMz_nb1RHIpbHGJtFtOInq8hX6FVLAarYmhez-PAcpNiBOzdiINWEzyCr2trHx5_YlnESaGjxYuTq_dSPrkHv3ftiu-jINCr7bskwmG6ZviLu_awzhNKfyNK5Kf7aqtmFEDX_DpnsYJH7cztth_fMGnWUKXSYNW82OEZPUfX4nv4auzQIR11NxRIUZdND1-zonFFYKk7lSHZb2LTUzM58tNbEW2RpXjDYsPm0gmegF3ZMZnO5eVu2K2iZf6WKBZtGKvlkuhqFwH9yEMCxm6m9-WTrkJHg3Jd47z_Lz0E6JRAlny8yUcoHIwBv_xgE9sqndUjvxIs6YUgGGJO69zRSb-Xfz9hm8vSvz5SMP_6g_22RE1G-h8BV0sCie038u8SAqDSUjJoUQfuRPXLsrYH5x2ZjuiakR2jYkh7-pHS4ChCrru7cTrh_bkTeN_PLDei8jOu1KdPoBaf-btEbejGUraredXoctVaFr6XX-py7o14iglwZTcQJCooXn8LvtgyHdyLYhqDI5_-T6xRWXu7M79-yVYPhAXKN2Kl02r1x6ntOhpI1sGzVnnwCOwh0qzefVd3zwXEOTZThE3tki9gdmZg66YVCDnNnED3wJLHBVCPLAwsi5RiwGwimoQmUSAZK-EbNEWNVwxUOznO2p1m97nZ1jDhRTs1YJIRn_flxuNyyzv--N-99s29N8ldA3kRYgOv2hPYzSSBtv4Jtx2AWMV4px6rD75LLjowUne26dcaySG2Xuoiz3uWmotpJ8-v8xD9bG6hs8J93vOUkOeCeYQliN_qsHyVFeh_C3Xi585Cg.loUcl4tAqIbowHxklRnQPA",
+    //     },
+    //   }
+    // )
+    //   .then((response) => {
+    //     if (!response.ok) {
+    //       throw new Error(`HTTP error! status: ${response.status}`);
+    //     }
+    //     return response.json();
+    //   })
+    //   .then((data) => console.log(data, 100000000))
     //   .catch((error) => console.error("Error:", error));
     const checkAuth = async () => {
       const user = userPool.getCurrentUser();
@@ -162,12 +165,12 @@ const App = ({ session }) => {
                 UserPoolId: process.env.REACT_APP_API_POOLID,
                 GroupName: session["accessToken"].payload["cognito:groups"][0],
               };
-
               const command = new ListUsersInGroupCommand(input);
 
               const response = await client.send(command);
               console.log(response);
               dispatch({ type: "GET_USERS", payload: response });
+              fetchData(session.idToken.jwtToken);
             } catch (error) {
               console.error("Error listing users:", error);
             }
@@ -179,7 +182,7 @@ const App = ({ session }) => {
           if (err) {
             console.log(err);
           } else {
-            // console.log(attributes);
+            console.log(attributes);
             // dispatch({ type: "GET_USERS", payload: attributes });
           }
         });
