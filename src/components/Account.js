@@ -5,45 +5,61 @@ import { fromCognitoIdentityPool } from "@aws-sdk/credential-providers";
 import { useState } from "react";
 import Checkout from "./Checkout";
 
-const Account = ({ users, session, creditsData }) => {
+const Account = ({ users, session, creditsData, email }) => {
   // const { SESClient, SendEmailCommand } = require("@aws-sdk/client-ses"); // CommonJS import
   const [checkout, setCheckout] = useState(false);
   const [code, setCode] = useState(null);
   const [amount, setAmount] = useState(8);
   const [pages, setPages] = useState(1);
   // { // SendEmailResponse
-  const testing = async () => {
-    // const fetchData = async (token) => {
-    const updatedData = creditsData;
-    updatedData.tenantBalance = 0;
-    const tenantId = session.idToken.payload["custom:tenantId"];
-    try {
-      const response = await fetch(
-        `https://3q4kwhfhx4.execute-api.eu-west-1.amazonaws.com/prod/tenant/${tenantId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session.idToken.jwtToken}`,
-          },
-          body: JSON.stringify(updatedData),
-        }
-      );
+  console.log(creditsData);
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+  // const testing = async () => {
+  //   // const fetchData = async (token) => {
+  //   // console.log(creditsData)
 
-      const data = await response.json();
-      console.log(data);
-    } catch (error) {
-      console.error("Error:", error);
-    }
-    // };
-    // await fetchData();
-    console.log(session);
-    console.log(creditsData, "function running");
-  };
+  //   console.log(creditsData, 10);
+  //   const updatedData = creditsData;
+  //   let newBalance = parseInt(updatedData.tenantBalance);
+  //   newBalance += pages;
+  //   updatedData.tenantBalance = newBalance.toString();
+  //   console.log(updatedData, "UUUUDDDD");
+  //   // updatedData["tenant_balance"] = "20";
+  //   // console.log(updatedData, 21);
+  //   const tenantId = session.idToken.payload["custom:tenantId"];
+  //   console.log(updatedData, "updatedData");
+  //   try {
+  //     const response = await fetch(
+  //       `https://kjlkl8q5pa.execute-api.eu-west-1.amazonaws.com/prod/tenant/${tenantId}`,
+  //       {
+  //         method: "PUT",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: `Bearer ${session.idToken.jwtToken}`,
+  //         },
+  //         body: JSON.stringify(updatedData),
+  //       }
+  //     );
+
+  //     if (!response.ok) {
+  //       throw new Error(`HTTP error! status: ${response.status}`);
+  //     }
+
+  //     const data = await response.json();
+  //     console.log(data);
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //   }
+  //   // };
+  //   // await fetchData();
+  //   console.log(session);
+  //   console.log(creditsData, "function running");
+  // };
+  // console.log(
+  //   creditsData.filter((data) => data.tenantEmail === email)[0],
+  //   8888,
+  //   creditsData
+  // );
   return (
     <div className="Sections">
       <table>
@@ -53,7 +69,7 @@ const Account = ({ users, session, creditsData }) => {
           <th>Buy More Credits</th>
         </tr>
         <tr>
-          <td>{creditsData?.tenantBalance}</td>
+          <td>{creditsData.tenantBalance}</td>
           <td>
             {/* <input onChange={(e) => setAmount(e.target.value)} value={amount} /> */}
             <select
@@ -83,7 +99,7 @@ const Account = ({ users, session, creditsData }) => {
       {checkout && (
         <Checkout
           tenantId={session.idToken.payload["custom:tenantId"]}
-          testing={testing}
+          // testing={testing}
           pages={pages}
           amount={amount}
           code={code}
@@ -101,7 +117,8 @@ const mapStateToProps = (state) => {
   return {
     users: state.users.Users || [],
     session: state.session,
-    creditsData: state.creditsData[0],
+    creditsData: state.creditsData,
+    email: state?.session?.idToken?.payload?.email || "",
   };
 };
 export default connect(mapStateToProps, {})(Account);

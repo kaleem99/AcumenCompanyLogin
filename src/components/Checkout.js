@@ -13,7 +13,7 @@ import { getAuthToken, getCheckoutId } from "./PeachPaymentsApi";
 // const NONCE = "UNQ00012345678";
 // const SHOPPER_RESULT_URL = "https://mydemostore.com/OrderNo453432";
 
-const Checkout = ({ code, amount, pages, testing, session, creditsData }) => {
+const Checkout = ({ code, amount, pages, session, creditsData }) => {
   const paymentFormRef = useRef(null);
   const iframeRef = useRef(null);
 
@@ -79,13 +79,13 @@ const Checkout = ({ code, amount, pages, testing, session, creditsData }) => {
             const testing = async () => {
               // const fetchData = async (token) => {
               const updatedData = ${JSON.stringify(creditsData)};
-              updatedData.tenantBalance = ${updatedBalance};
+              updatedData.tenantBalance = ${updatedBalance.toString()};
               const tenantId = ${JSON.stringify(
                 session.idToken.payload["custom:tenantId"]
               )};
               try {
                 const response = await fetch(
-                  'https://3q4kwhfhx4.execute-api.eu-west-1.amazonaws.com/prod/tenant/' + tenantId,
+                  'https://kjlkl8q5pa.execute-api.eu-west-1.amazonaws.com/prod/tenant/' + tenantId,
                   {
                     method: "PUT",
                     headers: {

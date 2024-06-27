@@ -6,6 +6,8 @@ import { userPool } from "../aws-exports";
 const NavSections = [
   { name: "Home", user: true },
   { name: "Account", user: false },
+  { name: "Upload", user: false },
+
 ];
 const SidebarContainer = styled.div`
   width: 250px;

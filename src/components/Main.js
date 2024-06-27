@@ -4,6 +4,7 @@ import styled from "styled-components";
 import Home from "./Home";
 import Account from "./Account";
 import UserHome from "./UserHome";
+import Upload from "./Upload";
 
 const MainContainer = styled.div`
   flex-grow: 1;
@@ -20,6 +21,8 @@ const Main = ({ section, session }) => {
           return <UserHome />;
         }
         return <Home />;
+      case "Upload":
+        return <Upload />;
       case "Account":
         return <Account />;
       default:

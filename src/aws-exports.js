@@ -40,5 +40,5 @@ const poolData = {
 };
 
 const userPool = new CognitoUserPool(poolData);
-console.log(userPool);
+// console.log(userPool);
 export { userPool, client, config, sesClient };

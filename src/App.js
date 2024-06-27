@@ -23,6 +23,7 @@ import {
 import Login from "./Login";
 import { connect, useDispatch } from "react-redux";
 import ForgotPassword from "./components/ForgotPassword";
+import Upload from "./components/Upload";
 const Container = styled.div`
   display: flex;
   height: 100vh;
@@ -97,9 +98,10 @@ const App = ({ session }) => {
   const password = "@$TqC32#Nk#fiLWv";
   const dispatch = useDispatch();
   useEffect(() => {
-    const fetchData = async (token) => {
+    const fetchData = async (token, tenantid) => {
+      // console.log("Token", token, "+".repeat(20), tenantid);
       fetch(
-        "https://3q4kwhfhx4.execute-api.eu-west-1.amazonaws.com/prod/tenants",
+        `https://kjlkl8q5pa.execute-api.eu-west-1.amazonaws.com/prod/tenant/${tenantid}`,
         {
           method: "GET",
           headers: {
@@ -108,12 +110,17 @@ const App = ({ session }) => {
         }
       )
         .then((response) => {
+          console.log(response, "RESPONSE");
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
           }
           return response.json();
         })
-        .then((data) => dispatch({ type: "CREDITS_DATA", payload: data }))
+        .then((data) => {
+          console.log("()".repeat(30), data);
+          dispatch({ type: "CREDITS_DATA", payload: data });
+          console.log(data, 118);
+        })
         .catch((error) => console.error("Error:", error));
     };
     // fetch(
@@ -159,18 +166,29 @@ const App = ({ session }) => {
             // history.push("/login"); // Redirect to login if not authenticated
           } else {
             setIsAuthenticated("Home");
-            console.log(session);
+            // console.log(
+            //   session,
+            //   "SESSION",
+            //   session.idToken.payload["custom:tenantId"]
+            // );
             try {
               const input = {
                 UserPoolId: process.env.REACT_APP_API_POOLID,
                 GroupName: session["accessToken"].payload["cognito:groups"][0],
               };
+              const tenantId = session.idToken.payload["custom:tenantId"];
+              fetchData(session.idToken.jwtToken, tenantId);
+              console.log(
+                input,
+                20200303030,
+                session["accessToken"].payload["cognito:groups"][0]
+              );
               const command = new ListUsersInGroupCommand(input);
-
+              console.log(command, 636377373);
               const response = await client.send(command);
-              console.log(response);
+              console.log("?".repeat(20));
+              console.log(response, "*".repeat(10));
               dispatch({ type: "GET_USERS", payload: response });
-              fetchData(session.idToken.jwtToken);
             } catch (error) {
               console.error("Error listing users:", error);
             }

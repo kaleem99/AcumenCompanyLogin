@@ -12,6 +12,8 @@ const reducer = (state = defaultState, action) => {
       return { ...state, section: action.type };
     case "Account":
       return { ...state, section: action.type };
+    case "Upload":
+      return { ...state, section: action.type };
     case "GET_USERS":
       return { ...state, users: action.payload };
     case "SESSION_DATA":
